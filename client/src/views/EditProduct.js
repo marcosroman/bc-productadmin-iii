@@ -1,33 +1,36 @@
-import {useState} from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router';
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 
 const Form = props => {
 	const [title, setTitle] = useState("");
 	const [price, setPrice] = useState("");
 	const [description, setDescription] = useState("");
-	const {setNewSubmitted} = props;
-	const {product} = props;
+	const { id } = useParams();
+	const navigate = useNavigate();
+
+	useEffect(() => {
+		axios.get('http://localhost:8000/api/products/'+id)
+		     .then(res => {
+					 setTitle(res.data.product.title);
+					 setPrice(res.data.product.price);
+					 setDescription(res.data.product.description);
+				 })
+	},[id]);
 	
 	const submitForm = (e) => {
 		e.preventDefault();
 
-		setNewSubmitted(true);
-		console.log(title,price,description);
-		axios.post('http://localhost:8000/api/products/new',
+		axios.put('http://localhost:8000/api/products/'+id+'/edit',
 							 {title, price, description})
-				 .then(res => {
-					 setNewSubmitted(true);
-					 setTitle("");
-					 setPrice("");
-					 setDescription("");
-				 })
-				 .catch(err => console.log(err));
+				 .then(res => navigate(`/${id}`))
 	}
 
 	return (
 		<div className="container">
 		<form onSubmit={submitForm}>
-			<h1>Product Manager</h1>
+			<h2>Edit/Update Product</h2>
 			<div className="form-group">
 				<label htmlFor="title">Titulo</label>
 				<input className="form-control"
@@ -47,7 +50,7 @@ const Form = props => {
 							 value={description} onChange={e => setDescription(e.target.value)} />
 			</div>
 			<input className="btn btn-primary"
-		         type="submit" value="Guardar"/>
+		         type="submit" value="Actualizar"/>
 		</form>
 		</div>
 	);

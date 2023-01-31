@@ -13,7 +13,16 @@ const ProductList = (props) => {
 					 setProductList(res.data.product)})
 		console.log('fetching via get');
 		if(newSubmitted) setNewSubmitted(false);
-	},[newSubmitted]);
+	},[setNewSubmitted,newSubmitted]);
+
+	const deleteProduct = (id) => {
+		axios.delete(`http://localhost:8000/api/products/${id}/delete`)
+		     .then(res => {
+					 console.log(`id is ${id}`);
+			      setProductList(productList.filter((product) => product._id !== id))
+				 	})
+				 .catch(err => console.log('error with delete: '+err));
+	}
 
 	return (
 		<div className="container">
@@ -22,6 +31,9 @@ const ProductList = (props) => {
 				{productList.map((item,index) =>
 					<li key={index} className="list-group-item">
 						<Link to={item._id}>{item.title}</Link>
+
+						<button className="btn btn-outline-primary"
+					          onClick={e => deleteProduct(item._id)}>Delete</button>
 					</li>)}
 			</ul>
 		</div>

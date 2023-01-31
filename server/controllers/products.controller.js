@@ -23,6 +23,20 @@ module.exports = {
 			       .then(product => res.json({product}))
 			       .catch(error => res.json({message: "couldnt find product "+req.params.id,
 						                           error}));
-		}
+		},
+
+	updateProduct:
+		(req, res) => {
+			Product.findOneAndUpdate({_id: req.params.id}, req.body, {new: true})
+			        .then(product => res.json({product}))
+			        .catch(err => res.json({msg:'couldnt update',err}));
+		},
+
+	deleteProduct:
+		(req, res) => {
+			Product.deleteOne({_id: req.params.id})
+			       .then(product => res.json({product}))
+						 .catch(error => res.json({error}));
+		},
 };
 
